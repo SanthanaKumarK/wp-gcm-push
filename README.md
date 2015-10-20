@@ -1,1 +1,1 @@
-# wp-pushNotification
+# wp-gcm-push
