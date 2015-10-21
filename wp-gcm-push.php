@@ -9,21 +9,19 @@
  * License: GPL2
  */
 
+define('WP_GCM_PUSH_PLUGIN_DIR', dirname(__FILE__));
+
 spl_autoload_register(function($className) {
     $classArray = explode('\\', $className);
     if ($classArray[0] == 'GcmPush') {
         array_shift($classArray);
-        $path = dirname(__FILE__) . '/Classes/' . implode('/', $classArray) .'.class.php';
+        $path = WP_GCM_PUSH_PLUGIN_DIR . '/Classes/' . implode('/', $classArray) .'.class.php';
         if (file_exists($path)) {
             require_once $path;
         }
     }
 });
 $gcmPush = new \GcmPush\Controllers\GcmPush();
-
-// add actions
-add_action('admin_menu', array($gcmPush, 'getAdminMenu'));
-add_action('admin_init', array($gcmPush->getSettings(), 'registerSettings'));
 
 /**
  * Activate the plugin, Create table if not exists
