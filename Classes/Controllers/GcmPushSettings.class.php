@@ -25,32 +25,8 @@ class GcmPushSettings
     public function __construct()
     {
         if (is_admin()) {
-            add_action('admin_menu', array($this, 'getMenu'));
             add_action('admin_init', array($this, 'register'));
         }
-    }
-
-    /**
-     * Get administrator menu
-     */
-    public function getMenu()
-    {
-        add_menu_page(
-            'GCM Push',
-            'GCM Push',
-            'manage_options',
-            'gcm-push',
-            '',
-            'dashicons-cloud'
-        );
-        add_submenu_page(
-            'gcm-push',
-            __('Settings', 'gcm-push'),
-            __('Settings', 'gcm-push'),
-            'manage_options',
-            'gcm-push-settings',
-            array($this, 'showSettings')
-        );
     }
 
     /**

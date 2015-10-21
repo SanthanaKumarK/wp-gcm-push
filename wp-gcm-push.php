@@ -35,7 +35,7 @@ function gcm_push_activation()
     $charsetCollate = $wpdb->get_charset_collate();
     if ($wpdb->get_var("show tables like '$tableName'") != $tableName) {
         $sql = "CREATE TABLE `$tableName` (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `ID` int(11) NOT NULL AUTO_INCREMENT,
           `reg_id` text,
           `os` varchar(55) DEFAULT '' NOT NULL,
           `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

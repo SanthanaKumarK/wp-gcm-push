@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h2>Google Cloud Messaging</h2>
+    <h2><?php _e('Settings', 'gcm-push'); ?></h2>
 
     <div id="poststuff">
 
@@ -13,7 +13,6 @@
 
             <div id="post-body-content">
                 <div class="postbox">
-                    <h3><?php _e('Settings', 'gcm-push'); ?></h3>
                     <div class="inside">
                         <div id="settings">
                             <form method="post" action="options.php">
