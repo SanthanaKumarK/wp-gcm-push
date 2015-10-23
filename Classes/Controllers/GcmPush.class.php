@@ -25,8 +25,23 @@ class GcmPush
         if (is_admin()) {
             add_action('admin_menu', array($this, 'getMenu'));
         }
+        
+        // Register controllers for json api
+        add_filter('json_api_controllers', array($this, 'getJsonApiControllers'));
+        add_filter('json_api_gcmpush_controller_path', array($this, 'getGcmPushControllerPath'));
     }
 
+    function getJsonApiControllers($controllers)
+    {
+        $controllers[] = 'GcmPush';
+        return $controllers;
+    }
+    
+    function getGcmPushControllerPath()
+    {
+        return dirname(__FILE__) . '/GcmPushJsonApi.class.php';
+    }
+    
     /**
      * Get administrator menu
      */

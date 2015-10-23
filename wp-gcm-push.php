@@ -11,6 +11,17 @@
 
 define('WP_GCM_PUSH_PLUGIN_DIR', dirname(__FILE__));
 
+include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+if (!is_plugin_active('json-api/json-api.php')) {
+    add_action(
+        'admin_notices',
+        function() {
+            require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/JsonApiError.php';
+        }
+    );
+    return;
+}
+
 spl_autoload_register(function($className) {
     $classArray = explode('\\', $className);
     if ($classArray[0] == 'GcmPush') {
