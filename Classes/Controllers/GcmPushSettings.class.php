@@ -17,7 +17,7 @@ namespace GcmPush\Controllers;
  */
 class GcmPushSettings
 {
-    protected $options;
+    public $options;
 
     /**
      * Default constructor
@@ -27,6 +27,7 @@ class GcmPushSettings
         if (is_admin()) {
             add_action('admin_init', array($this, 'register'));
         }
+        $this->options = get_option('gcm-push-setting');
     }
 
     /**
@@ -55,7 +56,6 @@ class GcmPushSettings
      */
     public function showSettings()
     {
-        $this->options = get_option('gcm-push-setting');
         require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/Settings.php';
     }
 }

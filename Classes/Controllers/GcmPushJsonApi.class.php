@@ -1,8 +1,8 @@
 <?php
+
 /*
  Controller name: GcmPush
  Controller description: Api to send push notification using Google cloud messaging
-
  */
 
 /**
@@ -13,6 +13,11 @@
  */
 class JSON_API_GcmPush_Controller
 {
+    /**
+     * Register the device to the send the push notification
+     * 
+     * @return array
+     */
     public function register()
     {
         global $json_api, $wpdb;
@@ -39,5 +44,4 @@ class JSON_API_GcmPush_Controller
             'message' => $status,
         );
     }
-    
 }
