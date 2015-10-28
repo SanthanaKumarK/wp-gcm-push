@@ -29,7 +29,7 @@ class GcmPush
     {
         $this->objSettings = new GcmPushSettings();
         if (is_admin()) {
-            add_action('admin_menu', array($this, 'getMenu'));
+            add_action('admin_menu', array($this, 'getAdminMenu'));
         }
         
         // Register controllers for json api
@@ -102,15 +102,23 @@ class GcmPush
     /**
      * Get administrator menu
      */
-    public function getMenu()
+    public function getAdminMenu()
     {
         add_menu_page(
-            'GCM Push',
-            'GCM Push',
+            __('GCM Push', 'gcm-push'),
+            __('GCM Push', 'gcm-push'),
             'manage_options',
             'gcm-push',
             array($this, 'listUsers'),
             'dashicons-cloud'
+        );
+        add_submenu_page(
+            'gcm-push',
+            __('New Message', 'gcm-push'),
+            __('New Message', 'gcm-push'),
+            'manage_options',
+            'gcm-push-new-message',
+            array($this, 'sendMessage')
         );
         add_submenu_page(
             'gcm-push',
@@ -154,4 +162,28 @@ class GcmPush
         require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/Users.php';
     }
 
+    /**
+     * Parse New Message page
+     */
+    public function sendMessage()
+    {
+        wp_register_script('chosen.js', WP_GCM_PUSH_PLUGIN_URL . 'Lib/chosen/jquery.chosen.js');
+        wp_enqueue_script('chosen.js');
+        wp_register_style('chosen.css', WP_GCM_PUSH_PLUGIN_URL . 'Lib/chosen/chosen.css');
+        wp_enqueue_style('chosen.css');
+
+        $apiKey = $this->objSettings->options['api-key'];
+        if (!empty($apiKey) && isset($_POST['send-notification'])) {
+            try {
+                $gcmMessenger = new GcmPushMessenger($apiKey);
+                $gcmMessenger->setData(array('message' => $_POST['push-message']));
+                $gcmMessenger->addRegistrationId($_POST['users']);
+                $gcmMessenger->send();
+            } catch (\Exception $e) {
+                die($e->getMessage());
+            }
+        }
+        $users = $this->getAllUsers();
+        require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/NewMessage.php';
+    }
 }

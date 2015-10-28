@@ -9,7 +9,8 @@
  * License: GPL2
  */
 
-define('WP_GCM_PUSH_PLUGIN_DIR', dirname(__FILE__));
+define('WP_GCM_PUSH_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
+define('WP_GCM_PUSH_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 if (!is_plugin_active('json-api/json-api.php')) {
