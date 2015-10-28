@@ -7,7 +7,7 @@
             <div id="post-body-content">
                 <div class="postbox">
                     <div class="inside">
-                        <?php if (empty($$apiKey)) : ?>
+                        <?php if (empty($apiKey)) : ?>
                         <div id="message" class="error fade">
                             <p style="line-height: 150%">
                             <?php
