@@ -36,14 +36,26 @@ class GcmPushSettings
     public function register()
     {
         add_settings_section('gcm-push-setting-section', '', '', 'gcm-push');
-        add_settings_field('api-key', __('Api Key', 'gcm-push'), array($this, 'apiKeyCallback'), 'gcm-push', 'gcm-push-setting-section');
+        add_settings_field('api-key', __('Google cloud messaging Api key', 'gcm-push'), array($this, 'apiKeyCallback'), 'gcm-push', 'gcm-push-setting-section');
+        add_settings_field('send-notification-post-update', __('Send notification on post update', 'gcm-push'), array($this, 'sendNotificationPostOptionCallback'), 'gcm-push', 'gcm-push-setting-section');
         register_setting('gcm-push-setting-group', 'gcm-push-setting', '');
+    }
+
+    /**
+     * Setting notification on post update callback
+     */
+    public function sendNotificationPostOptionCallback()
+    {
+        printf(
+            '<input type="checkbox" %s name="gcm-push-setting[send-notification-post-update]" value="1" />',
+            !empty($this->options['send-notification-post-update']) ? 'checked' : ''
+        );
     }
 
     /**
      * Setting api key callback
      */
-    function apiKeyCallback()
+    public function apiKeyCallback()
     {
         printf(
             '<input type="text" name="gcm-push-setting[api-key]" value="%s" />',

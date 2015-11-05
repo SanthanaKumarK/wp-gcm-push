@@ -47,13 +47,13 @@ class GcmPush
      */
     function getPostCheckBoxOption() {
         global $post;
-        if ($this->canSendNotification() && get_post_type($post) == 'post') {
+        if ($this->canSendNotificationOnPostUpdate() && get_post_type($post) == 'post') {
             require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/SendNotificationCheckBox.php';
         }
     }
 
     /**
-     * Check whether the plugin can able to send notification based on the settings
+     * Check whether the plugin can able to send notification based on general the settings
      *
      * @return boolean TRUE|FALSE
      */
@@ -62,6 +62,24 @@ class GcmPush
         $apiKey = $this->objSettings->options['api-key'];
 
         if (empty($apiKey)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check whether the plugin can able to send notification for post update
+     *
+     * @return boolean TRUE|FALSE
+     */
+    public function canSendNotificationOnPostUpdate()
+    {
+        if (!$this->canSendNotification()) {
+            return false;
+        }
+        $notificationOption = $this->objSettings->options['send-notification-post-update'];
+        if (empty($notificationOption)) {
             return false;
         }
 
@@ -79,7 +97,7 @@ class GcmPush
      */
     public function sendGcmPushNotification($newStatus, $oldStatus, $post)
     {
-        if (   !$this->canSendNotification()
+        if (   !$this->canSendNotificationOnPostUpdate()
             || empty($_POST['gcm-push-send-notification'])
             || 'post' != get_post_type($post)
             || $newStatus != 'publish'
@@ -206,7 +224,7 @@ class GcmPush
         wp_enqueue_style('chosen.css');
 
         $apiKey = $this->objSettings->options['api-key'];
-        if (!empty($apiKey) && isset($_POST['send-notification'])) {
+        if ($this->canSendNotification() && isset($_POST['send-notification'])) {
             try {
                 $gcmMessenger = new GcmPushMessenger($apiKey);
                 $gcmMessenger->setData(array('message' => $_POST['push-message']));
