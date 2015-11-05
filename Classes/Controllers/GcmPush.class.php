@@ -31,6 +31,8 @@ class GcmPush
         if (is_admin()) {
             add_action('admin_menu', array($this, 'getAdminMenu'));
         }
+        // add post page
+        add_action('post_submitbox_misc_actions', array($this, 'getPostCheckBoxOption'));
         
         // Register controllers for json api
         add_filter('json_api_controllers', array($this, 'getJsonApiControllers'));
@@ -38,6 +40,32 @@ class GcmPush
         
         // Register hooks to send Gcm on update post
         add_action('transition_post_status', array($this, 'sendGcmPushNotification'), 10, 3);
+    }
+
+    /**
+     * Get the post publish meta box
+     */
+    function getPostCheckBoxOption() {
+        global $post;
+        if ($this->canSendNotification() && get_post_type($post) == 'post') {
+            require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/SendNotificationCheckBox.php';
+        }
+    }
+
+    /**
+     * Check whether the plugin can able to send notification based on the settings
+     *
+     * @return boolean TRUE|FALSE
+     */
+    public function canSendNotification()
+    {
+        $apiKey = $this->objSettings->options['api-key'];
+
+        if (empty($apiKey)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -51,9 +79,14 @@ class GcmPush
      */
     public function sendGcmPushNotification($newStatus, $oldStatus, $post)
     {
-        if ('post' != get_post_type($post) || $newStatus != 'publish') {
+        if (   !$this->canSendNotification()
+            || empty($_POST['gcm-push-send-notification'])
+            || 'post' != get_post_type($post)
+            || $newStatus != 'publish'
+        ) {
             return;
         }
+
         $apiKey = $this->objSettings->options['api-key'];
         
         $postType   = $oldStatus == 'publish' ? 'update' : 'new_post';
