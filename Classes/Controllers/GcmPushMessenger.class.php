@@ -75,7 +75,7 @@ class GcmPushMessenger
             $sendIdsChunk = array_chunk($this->registrationIds, 1000);
             foreach ($sendIdsChunk as $ids) {
                 $fields['registration_ids'] = $ids;
-                $this->send($fields);
+                $this->sendCurl($fields);
             }
         } catch (\Exception $e) {
             throw $e;
