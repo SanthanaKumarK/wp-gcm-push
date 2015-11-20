@@ -39,7 +39,7 @@ class GcmPush
         add_filter('json_api_gcmpush_controller_path', array($this, 'getGcmPushControllerPath'));
         
         // Register hooks to send Gcm on update post
-        add_action('transition_post_status', array($this, 'sendGcmPushNotification'), 10, 3);
+        add_action('publish_post', array($this, 'sendGcmPushNotification'), 10, 3);
     }
 
     /**
@@ -89,37 +89,41 @@ class GcmPush
     /**
      * Hook to send push notification, while updating the post
      * 
-     * @param string $newStatus New post status
-     * @param string $oldStatus Old post status
-     * @param string $post      Post instance
+     * @param integer $ID   Post id
+     * @param string  $post Post instance
      * 
      * @return null
      */
-    public function sendGcmPushNotification($newStatus, $oldStatus, $post)
+    public function sendGcmPushNotification($ID, $post)
     {
         if (   !$this->canSendNotificationOnPostUpdate()
             || empty($_POST['gcm-push-send-notification'])
             || 'post' != get_post_type($post)
-            || $newStatus != 'publish'
         ) {
             return;
         }
 
         $apiKey = $this->objSettings->options['api-key'];
-        
-        $postType   = $oldStatus == 'publish' ? 'update' : 'new_post';
 
         $postTitle  = get_the_title($post);
         $postUrl    = get_permalink($post);
-        $postId     = get_the_ID($post);
         $postAuthor = get_the_author_meta('display_name', $post->post_author);
-        $message    = $postTitle . ";" . $postUrl . ";" . $postId . ";" . $postAuthor . ";";
-
+        $message    = array(
+            'title'      => $postTitle,
+            'message'    => 'Added by '. $postAuthor,
+            'postId'     => $ID,
+            'type'       => 'new_post',
+            'subtitle'   => '',
+            'tickerText' => '',
+            'msgcnt'     => 1,
+            'vibrate'    => 1,
+            'contents'   => $postUrl
+        );
         // Send notification
         try {
             $users        = $this->getAllUsers();
             $gcmMessenger = new GcmPushMessenger($apiKey);
-            $gcmMessenger->setData(array($postType => $message));
+            $gcmMessenger->setData($message);
             $gcmMessenger->addRegistrationId($users);
             $gcmMessenger->send();
         } catch (\Exception $e) {

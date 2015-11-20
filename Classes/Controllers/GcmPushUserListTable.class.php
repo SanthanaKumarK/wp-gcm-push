@@ -68,7 +68,7 @@ class GcmPushUserListTable extends \WP_List_Table
     function get_columns(){
         $columns = array(
             'cb'         => '<input type="checkbox" />',
-            'reg_id'     => 'Title',
+            'reg_id'     => 'Device Id',
             'os'         => 'Os',
             'created_at' => 'Registerd Date'
         );
