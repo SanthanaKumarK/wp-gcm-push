@@ -39,6 +39,7 @@ class GcmPushUserListTable extends \WP_List_Table
             case 'reg_id':
             case 'os':
             case 'created_at':
+            case 'status':
                 return $item[$column_name];
             default:
                 return print_r($item, true);
@@ -70,7 +71,8 @@ class GcmPushUserListTable extends \WP_List_Table
             'cb'         => '<input type="checkbox" />',
             'reg_id'     => 'Device Id',
             'os'         => 'Os',
-            'created_at' => 'Registerd Date'
+            'created_at' => 'Registerd Date',
+            'status'     => 'Status'
         );
         return $columns;
     }
@@ -84,7 +86,8 @@ class GcmPushUserListTable extends \WP_List_Table
         $sortable_columns = array(
             'reg_id'     => array('reg_id',false),     //true means it's already sorted
             'os'         => array('os',false),
-            'created_at' => array('created_at',false)
+            'created_at' => array('created_at',false),
+            'status'     => array('status',false)
         );
         return $sortable_columns;
     }

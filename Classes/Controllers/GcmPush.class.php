@@ -121,7 +121,7 @@ class GcmPush
         );
         // Send notification
         try {
-            $users        = $this->getAllUsers();
+            $users        = $this->getAllUsers(1);
             $gcmMessenger = new GcmPushMessenger($apiKey);
             $gcmMessenger->setData($message);
             $gcmMessenger->addRegistrationId($users);
@@ -190,12 +190,15 @@ class GcmPush
      * 
      * @return array
      */
-    public function getAllUsers()
+    public function getAllUsers($status = null)
     {
         global $wpdb;
         
         $tableName = $wpdb->prefix . 'gcm_push_users';
         $sql = "SELECT reg_id FROM $tableName";
+        if(isset($status)){
+            $sql .= ' WHERE status =' . $status;
+        }
         $res = $wpdb->get_results($sql);
         $users = array();
         if ($res != false) {
@@ -238,7 +241,7 @@ class GcmPush
                 die($e->getMessage());
             }
         }
-        $users = $this->getAllUsers();
+        $users = $this->getAllUsers(1);
         require_once WP_GCM_PUSH_PLUGIN_DIR .'/Views/NewMessage.php';
     }
 }

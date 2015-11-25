@@ -51,6 +51,7 @@ function gcm_push_activation()
           `reg_id` text,
           `os` varchar(55) DEFAULT '' NOT NULL,
           `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          `status` tinyint(1) NOT NULL DEFAULT '1',
           PRIMARY KEY (`id`)
         ) $charsetCollate;";
 
