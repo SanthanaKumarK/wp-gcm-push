@@ -75,7 +75,10 @@ class GcmPushMessenger
             $sendIdsChunk = array_chunk($this->registrationIds, 1000);
             foreach ($sendIdsChunk as $ids) {
                 $fields['registration_ids'] = $ids;
-                $this->sendCurl($fields);
+                $response = $this->sendCurl($fields);
+                if($response['failure'] || $response['canonical_ids']){
+                    $this->postSend($response['results'], $ids);
+                }
             }
         } catch (\Exception $e) {
             throw $e;
@@ -113,7 +116,42 @@ class GcmPushMessenger
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
         $result = curl_exec($ch);
+        return json_decode($result, true);
+    }
 
-        return $result;
+    /**
+     * process the cloud messaging response for after send the notification to cloud
+     *
+     * @param array $reponse Google cloud messaging Result
+     * @param array $gcmIds  notification send gcm token ids
+     *
+     * @return null
+     */
+    public function postSend($response, $gcmIds)
+    {
+        global $wpdb;
+        if (empty($response) || empty($gcmIds)) {
+            return;
+        }
+        $tableName = $wpdb->prefix . 'gcm_push_users';
+        foreach ($response as $key => $resp) {
+            $isDelete = false;
+            $gcmTokenId = wp_slash($gcmIds[$key]);
+            if (isset($resp['registration_id'])) {
+                $isDelete = true;
+                $canonicalId = wp_slash($resp['registration_id']);
+                $sql = "SELECT `reg_id` FROM $tableName WHERE `reg_id` = '$canonicalId'";
+                $result = $wpdb->get_results($sql);
+                if (empty($result)) {
+                    $updateSql = "UPDATE $tableName SET  `reg_id` =  '$canonicalId' WHERE  `reg_id` = '$gcmTokenId'";
+                    $wpdb->query($updateSql);
+                    $isDelete = false;
+                }
+            }
+            if (isset($resp['error']) || $isDelete) {
+                $deleteSql = "DELETE FROM `$tableName` WHERE `reg_id` = '$gcmTokenId'";
+                $wpdb->query($deleteSql);
+            }
+        }
     }
 }
