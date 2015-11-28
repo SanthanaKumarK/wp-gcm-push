@@ -122,7 +122,7 @@ class GcmPushMessenger
     /**
      * process the cloud messaging response for after send the notification to cloud
      *
-     * @param array $reponse Google cloud messaging Result
+     * @param array $response Google cloud messaging Result
      * @param array $gcmIds  notification send gcm token ids
      *
      * @return null
