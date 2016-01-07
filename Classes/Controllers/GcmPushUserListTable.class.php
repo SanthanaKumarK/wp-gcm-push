@@ -121,7 +121,7 @@ class GcmPushUserListTable extends \WP_List_Table
      */
     function prepare_items() {
 
-        $limit    = 20;
+        $limit    = 10;
         $columns  = $this->get_columns();
         $hidden   = array();
         $sortable = $this->get_sortable_columns();
@@ -146,12 +146,9 @@ class GcmPushUserListTable extends \WP_List_Table
     /**
     * Retrieve customer’s data from the database
     *
-    * @param int $limit Number of entries per page
-    * @param int $page  Page number
-    *
     * @return array Users array
     */
-    public function getUsers($limit = 5, $page = 1)
+    public function getUsers()
     {
         global $wpdb;
 
@@ -161,10 +158,6 @@ class GcmPushUserListTable extends \WP_List_Table
             $sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
             $sql .=!empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' ASC';
         }
-
-        $sql .= " LIMIT $limit";
-
-        $sql .= ' OFFSET ' . ( $page - 1 ) * $limit;
 
         $result = $wpdb->get_results($sql, 'ARRAY_A');
 
